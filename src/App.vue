@@ -8,6 +8,9 @@ import { reactive, ref } from 'vue'
 
 const productInfo = reactive(data)
 const selectedVariant = ref(data.variants[0])
+const changeVariant = variant => {
+  selectedVariant.value = variant
+}
 </script>
 
 <template>
@@ -26,6 +29,7 @@ const selectedVariant = ref(data.variants[0])
         <!-- 2ème colonne -->
 
         <Details
+          @changeSelectedVariant="changeVariant"
           :productInfo="productInfo"
           :selectedVariant="selectedVariant"
         />
@@ -49,7 +53,7 @@ const selectedVariant = ref(data.variants[0])
 }
 .container > div {
   width: 50%;
-  border: 1px solid green;
+  /* border: 1px solid green; */
 }
 .container > div:last-child {
   padding: 25px 0 25px 100px;

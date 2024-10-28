@@ -4,6 +4,24 @@ const props = defineProps({
   productInfo: { type: Object, Required: true },
   selectedVariant: { type: Object, Required: true },
 })
+const isVariantSoldOut = sizes => {
+  for (const key in sizes) {
+    if (sizes[key] > 0) {
+      return false
+    }
+  }
+  return true
+}
+
+const emit = defineEmits({ changeSelectedVariant: null })
+
+const handleEmitNewVariant = variant => {
+  const isSoldOut = isVariantSoldOut(variant.sizes)
+
+  if (!isSoldOut) {
+    emit('changeSelectedVariant', variant)
+  }
+}
 </script>
 <template>
   <div>
@@ -30,7 +48,11 @@ const props = defineProps({
         :src="variant.image.url"
         :alt="variant.image.alt"
         :key="variant.id"
-        :class="{ selectedImg: selectedVariant.id === variant.id }"
+        :class="{
+          selectedImg: selectedVariant.id === variant.id,
+          outOfStock: isVariantSoldOut(variant.sizes),
+        }"
+        @click="handleEmitNewVariant(variant)"
       />
     </div>
     <!-- ADVISE -->
@@ -114,10 +136,10 @@ h1 + p span {
   padding-top: 2px;
   cursor: pointer;
 }
-.sizes-bloc .outOfStock {
+.outOfStock {
   opacity: 0.5;
-  cursor: default;
 }
+
 /* ADVISE */
 .advise {
   background-color: var(--light-grey);
