@@ -24,7 +24,7 @@ const props = defineProps({ cart: { type: Array, required: true } })
           <font-awesome-icon :icon="['far', 'heart']" />
           <font-awesome-icon :icon="['fas', 'shopping-bag']" />
           <!-- Pastille affichant le nombre d'article dans le panier -->
-          <p class="num-of-product">{{ cart.length }}</p>
+          <p class="num-of-product" v-if="cart.length > 0">{{ cart.length }}</p>
         </nav>
       </div>
     </div>
