@@ -1,4 +1,6 @@
-<script setup></script>
+<script setup>
+const props = defineProps({ cart: { type: Array, required: true } })
+</script>
 <template>
   <header>
     <div class="header-top">
@@ -21,6 +23,8 @@
           <font-awesome-icon :icon="['far', 'user']" />
           <font-awesome-icon :icon="['far', 'heart']" />
           <font-awesome-icon :icon="['fas', 'shopping-bag']" />
+          <!-- Pastille affichant le nombre d'article dans le panier -->
+          <p class="num-of-product">{{ cart.length }}</p>
         </nav>
       </div>
     </div>
@@ -65,7 +69,9 @@ nav {
 nav:last-of-type {
   /* border: 1px solid red; */
   justify-content: flex-end;
+  position: relative; /* <==== 👈 ICI complément de style existant */
 }
+
 nav a {
   font-weight: bold;
   padding: 10px 15px;
@@ -85,5 +91,19 @@ svg {
 }
 svg:hover {
   border: 2px solid var(--main-black);
+}
+.num-of-product {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background-color: var(--main-orange);
+  padding-top: 1px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

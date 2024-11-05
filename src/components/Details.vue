@@ -1,5 +1,4 @@
 <script setup>
-// eslint-disable-next-line no-unused-vars
 const props = defineProps({
   productInfo: { type: Object, Required: true },
   selectedVariant: { type: Object, Required: true },
@@ -13,13 +12,43 @@ const isVariantSoldOut = sizes => {
   return true
 }
 
-const emit = defineEmits({ changeSelectedVariant: null })
+const emit = defineEmits({
+  changeSelectedVariant: null,
+  addProductToCart: product => {
+    // Si le payload existe et que c'est un objet
+    if (product && typeof product === 'object') {
+      // L'événement est validé
+      return true
+    } else {
+      // Ajout d'un warning (en plus de celui automatiquement déclenché par Vue.js) pour fournir un complément d'information sur la raison pour laquelle l'événement n'est pas valide
+      console.warn('Payload is required and must be an object')
+      // L'événement n'est pas validé
+      return false
+    }
+  },
+})
 
 const handleEmitNewVariant = variant => {
   const isSoldOut = isVariantSoldOut(variant.sizes)
 
   if (!isSoldOut) {
     emit('changeSelectedVariant', variant)
+  }
+}
+const handleSelectSize = (size, quantity) => {
+  const newObj = { ...props.selectedVariant }
+  if (quantity > 0) {
+    newObj.selectedSize = size
+    emit('changeSelectedVariant', newObj)
+  }
+}
+const handleAddToCart = () => {
+  if (!props.selectedVariant.selectedSize) {
+    // Aucune taille n'est sélectionnée donc l'utilisateur est alerté
+    alert('Veuillez sélectionner une taille !')
+  } else {
+    // Une taille est sélectionnée donc l'événement est émit
+    emit('addProductToCart', props.selectedVariant)
   }
 }
 </script>
@@ -49,7 +78,7 @@ const handleEmitNewVariant = variant => {
         :alt="variant.image.alt"
         :key="variant.id"
         :class="{
-          selectedImg: selectedVariant.id === variant.id,
+          selectedImg: variant.id === selectedVariant.id,
           outOfStock: isVariantSoldOut(variant.sizes),
         }"
         @click="handleEmitNewVariant(variant)"
@@ -62,17 +91,21 @@ const handleEmitNewVariant = variant => {
     </p>
     <!-- SIZE BLOC -->
     <div class="sizes-bloc">
-      <div
+      <p
         v-for="(quantity, size) in selectedVariant.sizes"
         :key="size"
-        :class="{ outOfStock: quantity === 0 }"
+        :class="{
+          outOfStock: quantity === 0,
+          selectedSize: size === selectedVariant.selectedSize,
+        }"
+        @click="handleSelectSize(size, quantity)"
       >
         {{ size }}
-      </div>
+      </p>
     </div>
 
     <div class="cart-bloc">
-      <button>Ajouter au panier</button>
+      <button @click="handleAddToCart">Ajouter au panier</button>
       <div>
         <font-awesome-icon :icon="['far', 'heart']" />
       </div>
@@ -126,7 +159,7 @@ h1 + p span {
   margin-bottom: 10px;
 }
 
-.sizes-bloc > div {
+.sizes-bloc > p {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -135,6 +168,9 @@ h1 + p span {
   height: 40px;
   padding-top: 2px;
   cursor: pointer;
+}
+.sizes-bloc .selectedSize {
+  border-width: 3px;
 }
 .outOfStock {
   opacity: 0.5;

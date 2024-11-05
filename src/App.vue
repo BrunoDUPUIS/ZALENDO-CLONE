@@ -8,14 +8,19 @@ import { reactive, ref } from 'vue'
 
 const productInfo = reactive(data)
 const selectedVariant = ref(data.variants[0])
+const cart = reactive([])
+const addToCart = product => {
+  cart.push(product)
+}
 const changeVariant = variant => {
   selectedVariant.value = variant
 }
+// console.log(selectedVariant.value)
 </script>
 
 <template>
   <div>
-    <Header />
+    <Header :cart="cart" />
     <main>
       <!-- wrapper -->
       <div class="container">
@@ -32,6 +37,8 @@ const changeVariant = variant => {
           @changeSelectedVariant="changeVariant"
           :productInfo="productInfo"
           :selectedVariant="selectedVariant"
+          :cart="cart"
+          @addProductToCart="addToCart"
         />
         <!-- le composant Details remplace l'ancienne structure qui a été transféré dans Details -->
       </div>
